@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wayang Planet</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header>
+    <div class="header-left">
+        <h1>Sistem Tata Surya dan Kearifan Lokal Wayang Kulit</h1>
+        <p>Mengenal Planet & Tokoh Wayang</p>
+           <!-- Tambahkan teks baru di sini -->
+        <p class="subtext">
+            Di dalam Wayang Planet Orbit, kamu akan belajar mengenal tata surya mulai dari Matahari sebagai pusatnya, delapan planet utama yang terdiri dari Merkurius, Venus, Bumi, Mars, Jupiter, Saturnus, Uranus, hingga Neptunus, serta memahami bagaimana setiap planet bergerak melalui rotasi dan revolusi dalam mengelilingi Matahari. Kamu juga akan mempelajari keberadaan satelit alami seperti Bulan yang setia mengorbit Bumi. Semua pembahasan ini dikemas melalui pendekatan unik dengan tokoh-tokoh wayang sehingga proses belajar menjadi lebih menarik, bermakna, dan mudah dipahami.
+        </p>
+    
+    </div>
+</header>
+
+<section class="container" id="planetContainer"></section>
+<button class="eval-btn" onclick="location.href='evaluasi.html'">
+            Evaluasi
+        </button>
+
+<!-- POPUP -->
+<div id="popup" class="popup">
+    <div class="popup-content">
+        <span class="close-btn" onclick="closePopup()">&times;</span>
+        
+        <img id="popupWayangImg" class="wayang-img" src="" alt="Wayang">
+
+        <h2 id="popupPlanet"></h2>
+        <h3 id="popupWayang"></h3>
+        <p id="popupDesc"></p>
+
+        <div class="popup-nav">
+            <button onclick="prevPlanet()">⟵ Sebelumnya</button>
+            <button onclick="nextPlanet()">Berikutnya ⟶</button>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <p>© 2025 Wayang Planet</p>
+</footer>
+
+<script>
+const planets = [
+    {
+        planet: "Matahari",
+        wayang: "Batara Surya",
+        desc: "Batara Surya merupakan Dewa Matahari dalam pewayangan yang memancarkan cahaya dan energi, selaras dengan fungsi Matahari sebagai pusat tata surya. Ia dihormati sebagai sumber kehidupan dan kekuatan, melambangkan energi besar yang memengaruhi keberlangsungan seluruh makhluk. Hubungannya dengan Matahari digambarkan melalui cahaya dan panas yang diberikan kepada Bumi, di mana semua planet mengelilinginya seperti makhluk kosmos yang bergantung pada kekuatan Batara Surya.",
+        imgPlanet: "https://asset.kompas.com/crops/AH0P48K8D5BeHdLMBsD-0K4FBAw=/112x65:888x581/1200x800/data/photo/2022/10/21/6351a2a1482e1.jpg",
+        imgWayang: "https://i.pinimg.com/1200x/ae/7f/53/ae7f536c2a14de77f3deb74953f001f8.jpg"
+    },
+    {
+        planet: "Merkurius",
+        wayang: "Hanoman",
+        desc: "Merkurius adalah planet terdekat dari Matahari. Hanoman melambangkan kecepatan yang luar biasa.",
+        imgPlanet: "https://cdn.grid.id/crop/0x0:0x0/700x465/photo/bobofoto/original/1428_merkurius-planet-kecil-berkawah-banyak.jpg",
+        imgWayang: "https://wayang.wordpress.com/wp-content/uploads/2010/03/anoman1.jpg"
+    },
+    {
+        planet: "Venus",
+        wayang: "Srikandi",
+        desc: "Venus adalah planet paling terang di langit malam. Srikandi melambangkan keanggunan dan ketegasan.",
+        imgPlanet: "https://upload.wikimedia.org/wikipedia/commons/e/e5/Venus-real_color.jpg",
+        imgWayang: "https://thumbs.dreamstime.com/z/srikandi-character-traditional-puppet-show-wayang-kulit-java-indonesia-73150352.jpg"
+    },
+    {
+        planet: "Bumi",
+        wayang: "Arjuna",
+        desc: "Planet Bumi adalah rumah bagi manusia. Arjuna melambangkan kebijaksanaan dan ketenangan.",
+        imgPlanet: "https://upload.wikimedia.org/wikipedia/commons/c/cb/The_Blue_Marble_%28remastered%29.jpg",
+        imgWayang: "https://img-highend.okezone.com/library/images/Tokoh%20wayang%20Arjuna.jpg"
+    },
+    {
+        planet: "Mars",
+        wayang: "Abimanyu",
+        desc: "Mars dikenal sebagai planet merah. Abimanyu melambangkan keberanian dan tekad kuat.",
+        imgPlanet: "https://upload.wikimedia.org/wikipedia/commons/0/02/OSIRIS_Mars_true_color.jpg",
+        imgWayang: "https://static.promediateknologi.id/crop/0x0:0x0/0x0/webp/photo/p2/214/2024/08/27/5-779968343.jpg"
+    },
+    {
+        planet: "Jupiter",
+        wayang: "Bima",
+        desc: "Jupiter adalah planet terbesar di tata surya. Bima menggambarkan kekuatan luar biasa.",
+        imgPlanet: "https://upload.wikimedia.org/wikipedia/commons/e/e2/Jupiter.jpg",
+        imgWayang: "https://static.promediateknologi.id/crop/0x0:0x0/0x0/webp/photo/p2/214/2024/07/29/Sambut-Tahun-Baru-2018-DPRD-DIY-Gelar-Wayang-Kulit-dengan-Lakon-Banjaran-Bima-Star-Jogja-FM-2003932352.jpeg"
+    },
+    {
+        planet: "Saturnus",
+        wayang: "Kresna",
+        desc: "Saturnus terkenal dengan cincin indahnya. Kresna melambangkan kebijaksanaan dan ketenangan agung.",
+        imgPlanet: "https://upload.wikimedia.org/wikipedia/commons/c/c7/Saturn_during_Equinox.jpg",
+        imgWayang: "https://nikodemusoul.wordpress.com/wp-content/uploads/2011/09/kresna_ensik.jpg"
+    },
+    {
+        planet: "Uranus",
+        wayang: "Nakula",
+        desc: "Uranus memiliki rotasi unik yang miring. Nakula melambangkan ketenangan dan kepahlawanan.",
+        imgPlanet: "https://upload.wikimedia.org/wikipedia/commons/3/3d/Uranus2.jpg",
+        imgWayang: "https://fadhilglory.wordpress.com/wp-content/uploads/2016/03/image0011.png"
+    },
+    {
+        planet: "Neptunus",
+        wayang: "Sadewa",
+        desc: "Neptunus adalah planet berangin ekstrem dan berwarna biru gelap. Sadewa melambangkan kecerdasan dan kedamaian.",
+        imgPlanet: "https://upload.wikimedia.org/wikipedia/commons/5/56/Neptune_Full.jpg",
+        imgWayang: "https://i.pinimg.com/564x/3f/69/48/3f6948f0d9a200e5679cebf26ca78512.jpg"
+    }
+];
+
+let currentIndex = 0;
+
+function renderPlanets() {
+    const container = document.getElementById("planetContainer");
+    container.innerHTML = planets.map((p, i) => `
+        <div class="planet-card" onclick="openPopup(${i})">
+            <div class="planet-img" style="background-image:url('${p.imgPlanet}')"></div>
+            <h2>${p.planet}</h2>
+            <p>Tokoh: ${p.wayang}</p>
+        </div>
+    `).join("");
+}
+
+renderPlanets();
+
+function openPopup(index) {
+    currentIndex = index;
+    const p = planets[index];
+
+    document.getElementById("popupPlanet").innerText = p.planet;
+    document.getElementById("popupWayang").innerText = "Tokoh Wayang: " + p.wayang;
+    document.getElementById("popupDesc").innerText = p.desc;
+    document.getElementById("popupWayangImg").src = p.imgWayang;
+
+    document.getElementById("popup").style.display = "flex";
+}
+
+function closePopup() {
+    document.getElementById("popup").style.display = "none";
+}
+
+function nextPlanet() {
+    currentIndex = (currentIndex + 1) % planets.length;
+    openPopup(currentIndex);
+}
+
+function prevPlanet() {
+    currentIndex = (currentIndex - 1 + planets.length) % planets.length;
+    openPopup(currentIndex);
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Game Evaluasi Wayang Planet</title>
+
+<style>
+    body {
+        margin: 0;
+        background: #030b1e;
+        color: white;
+        font-family: Poppins, sans-serif;
+        overflow: hidden;
+    }
+
+    /* Background bintang bergerak */
+    .stars {
+        width: 200%;
+        height: 200%;
+        background: url('https://i.ibb.co/5Lv7MnR/stars.png');
+        position: absolute;
+        animation: moveStars 60s linear infinite;
+        opacity: 0.4;
+        z-index: -1;
+    }
+    @keyframes moveStars {
+        from { transform: translate(0,0); }
+        to { transform: translate(-500px,-500px); }
+    }
+
+    .game-container {
+        position: relative;
+        width: 90%;
+        max-width: 600px;
+        margin: 40px auto;
+        text-align: center;
+        padding: 20px;
+        background: rgba(255,255,255,0.06);
+        backdrop-filter: blur(8px);
+        border-radius: 20px;
+        box-shadow: 0 0 20px cyan;
+        animation: popIn 0.6s ease;
+    }
+
+    @keyframes popIn {
+        from { transform: scale(0.6); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+
+    .question {
+        font-size: 22px;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+
+    .option {
+        background: rgba(0,255,255,0.15);
+        padding: 12px;
+        margin: 10px 0;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+    .option:hover {
+        background: rgba(0,255,255,0.3);
+        transform: scale(1.03);
+    }
+
+    /* Efek jawaban */
+    .correct {
+        background: rgba(0,255,0,0.4) !important;
+        box-shadow: 0 0 20px lime;
+    }
+    .wrong {
+        background: rgba(255,0,0,0.4) !important;
+        box-shadow: 0 0 20px red;
+        animation: shake 0.3s ease;
+    }
+
+    @keyframes shake {
+        0% { transform: translateX(0); }
+        25% { transform: translateX(-5px); }
+        50% { transform: translateX(5px); }
+        75% { transform: translateX(-5px); }
+        100% { transform: translateX(0); }
+    }
+
+    .progress-bar {
+        width: 100%;
+        background: rgba(255,255,255,0.15);
+        height: 15px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+
+    .progress {
+        height: 100%;
+        width: 0%;
+        background: cyan;
+        border-radius: 10px;
+        transition: 0.4s ease;
+    }
+
+    .result-screen {
+        display: none;
+        text-align: center;
+        padding: 20px;
+    }
+
+    .btn {
+        padding: 10px 18px;
+        border: none;
+        margin: 10px;
+        font-size: 16px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: 0.2s;
+    }
+    .btn:hover {
+        transform: scale(1.05);
+    }
+
+    .btn-new {
+        background: cyan;
+        color: #030b1e;
+    }
+
+    .btn-back {
+        background: orange;
+        color: white;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+</style>
+</head>
+<body>
+
+<div class="stars"></div>
+<!-- Tombol Kembali -->
+<a href="index.html" 
+   style="
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        background: orange;
+        padding: 10px 15px;
+        border-radius: 10px;
+        color: white;
+        text-decoration: none;
+        font-weight: bold;
+        box-shadow: 0 0 10px orange;
+        transition: 0.2s;
+   "
+   onmouseover="this.style.transform='scale(1.07)'"
+   onmouseout="this.style.transform='scale(1)'">
+    ⟵ Kembali
+</a>
+
+
+<div class="game-container" id="gameBox">
+    <h2>Game Evaluasi Wayang Planet</h2>
+
+    <div class="progress-bar">
+        <div id="progress" class="progress"></div>
+    </div>
+
+    <div id="questionBox">
+        <!-- Soal muncul dari JS -->
+    </div>
+</div>
+
+<div class="result-screen" id="resultScreen">
+    <h1 id="scoreText"></h1>
+    <!-- Tombol New Game -->
+    <button class="btn btn-new" onclick="resetGame()">New Game</button>
+    <br>
+    <!-- Tombol Kembali ke Planet -->
+    <a href="index.html" class="btn btn-back">⟵ Kembali ke Planet</a>
+</div>
+
+<!-- Suara -->
+<audio id="correctSound">
+    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_4c9c9c87ab.mp3?filename=correct-2-46134.mp3">
+</audio>
+
+<audio id="wrongSound">
+    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_4338cdf32c.mp3?filename=wrong-answer-126515.mp3">
+</audio>
+
+<script>
+const questions = [
+    { q: "Planet apakah yang menjadi pusat tata surya?", options: ["Bumi", "Matahari", "Jupiter", "Mars"], correct: 1 },
+    { q: "Tokoh wayang yang mewakili planet Bumi adalah?", options: ["Arjuna", "Hanoman", "Kresna", "Sadewa"], correct: 0 },
+    { q: "Planet paling dekat dengan Matahari?", options: ["Mars", "Merkurius", "Venus", "Saturnus"], correct: 1 },
+    { q: "Planet paling terang di langit malam adalah?", options: ["Mars", "Venus", "Uranus", "Neptunus"], correct: 1 },
+    { q: "Tokoh wayang yang mewakili Mars adalah?", options: ["Abimanyu", "Bima", "Nakula", "Srikandi"], correct: 0 },
+    { q: "Planet terbesar di tata surya adalah?", options: ["Jupiter", "Saturnus", "Bumi", "Uranus"], correct: 0 },
+    { q: "Tokoh wayang yang mewakili Jupiter adalah?", options: ["Hanoman", "Bima", "Nakula", "Kresna"], correct: 1 },
+    { q: "Planet yang memiliki cincin paling indah?", options: ["Neptunus", "Saturnus", "Uranus", "Merkurius"], correct: 1 },
+    { q: "Tokoh wayang untuk planet Uranus adalah?", options: ["Nakula", "Sadewa", "Arjuna", "Srikandi"], correct: 0 },
+    { q: "Planet dengan angin ekstrem dan berwarna biru gelap adalah?", options: ["Neptunus", "Venus", "Mars", "Uranus"], correct: 0 }
+];
+
+let index = 0;
+let score = 0;
+
+function loadQuestion() {
+    const q = questions[index];
+    const box = document.getElementById("questionBox");
+    box.innerHTML = `
+        <div class='question'>${q.q}</div>
+        ${q.options.map((opt,i)=>`<div class='option' onclick='answer(${i})'>${opt}</div>`).join("")}
+    `;
+}
+
+function answer(i) {
+    const q = questions[index];
+    const options = document.querySelectorAll(".option");
+
+    if (i === q.correct) {
+        score++;
+        options[i].classList.add("correct");
+        document.getElementById("correctSound").play();
+    } else {
+        options[i].classList.add("wrong");
+        document.getElementById("wrongSound").play();
+    }
+
+    index++;
+    document.getElementById("progress").style.width = (index / questions.length * 100) + "%";
+
+    setTimeout(()=>{
+        if(index<questions.length) loadQuestion();
+        else showResult();
+    },600);
+}
+
+function showResult() {
+    document.getElementById("gameBox").style.display="none";
+    document.getElementById("resultScreen").style.display="block";
+    document.getElementById("scoreText").innerHTML=`Skor Kamu: <b>${score}/${questions.length}</b>`;
+}
+
+function resetGame() {
+    index=0; score=0;
+    document.getElementById("progress").style.width="0%";
+    document.getElementById("gameBox").style.display="block";
+    document.getElementById("resultScreen").style.display="none";
+    loadQuestion();
+}
+
+// Load pertama kali
+loadQuestion();
+</script>
+
+</body>
+</html>
